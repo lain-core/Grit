@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Text
 import com.shub39.grit.R
+import com.shub39.grit.core.domain.DefaultPage
 import com.shub39.grit.core.presentation.GritTheme
 import com.shub39.grit.tasks.domain.Category
 import com.shub39.grit.tasks.domain.ClearPreferences
@@ -67,6 +68,57 @@ fun Settings(
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onBackground
                     )
+                }
+            )
+
+            ListItem (
+                headlineContent = {
+                    Text(
+                        text = stringResource(R.string.default_page),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                },
+                supportingContent = {
+                    Text(
+                        text = stringResource(R.string.default_page_exp),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+                    )
+                },
+                trailingContent = {
+                    var expanded by remember { mutableStateOf(false) }
+
+                    Row {
+                        Button(
+                            onClick = { expanded = true }
+                        ) {
+                            Text(
+                                text = state.defaultPage.pagename,
+                                color = MaterialTheme.colorScheme.surface
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            DefaultPage.entries.forEach { preference ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = preference.pagename,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    },
+                                    onClick = {
+                                        action(SettingsAction.UpdateDefaultPage(preference))
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
             )
 

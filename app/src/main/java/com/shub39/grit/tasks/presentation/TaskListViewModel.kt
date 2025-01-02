@@ -3,6 +3,7 @@ package com.shub39.grit.tasks.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shub39.grit.core.data.GritDatastore
+import com.shub39.grit.core.domain.DefaultPage
 import com.shub39.grit.core.domain.NotificationAlarmScheduler
 import com.shub39.grit.tasks.domain.Category
 import com.shub39.grit.tasks.domain.CategoryColors
@@ -89,6 +90,10 @@ class TaskListViewModel(
     fun tasksSettingsAction(action: SettingsAction) {
         viewModelScope.launch {
             when (action) {
+                is SettingsAction.UpdateDefaultPage -> {
+                    datastore.setDefaultPage(action.defaultPage)
+                }
+
                 is SettingsAction.UpdateClearPreference -> {
                     cancelScheduleDeletion(_tasksSettings.value.currentClearPreference)
                     datastore.setClearPreferences(action.clearPreference)
@@ -104,6 +109,16 @@ class TaskListViewModel(
 
     private fun observeSettings() {
         settingsJob?.cancel()
+//        settingsJob = datastore
+//            .defaultPage()
+//            .onEach { preference ->
+//                _tasksSettings.update { settings ->
+//                    settings.copy(
+//                        defaultPage = DefaultPage.valueOf(preference)
+//                    )
+//                }
+//            }
+//            .launchIn(viewModelScope)
         settingsJob = datastore
             .clearPreferences()
             .onEach { preference ->
